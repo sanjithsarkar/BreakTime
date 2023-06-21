@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('break_times', function (Blueprint $table) {
             $table->id();
-            $table->integer('emp_id');
+            $table->unsignedInteger('emp_id');
+            $table->string('break_type')->nullable();
             $table->string('break_in')->nullable();
             $table->string('break_end')->nullable();
+            $table->string('total')->nullable();
+            $table->tinyInteger('status')->nullable();
             $table->timestamps();
         });
     }
