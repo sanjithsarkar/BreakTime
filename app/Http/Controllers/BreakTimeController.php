@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Validator;
 
 class BreakTimeController extends Controller
 {
@@ -34,22 +35,54 @@ class BreakTimeController extends Controller
     public function store(Request $request)
     {
         //dd($request->all());
-        $request->validate([
+        $validatedData = Validator::make($request->all(), [
             'emp_id' => 'required|numeric|max:255',
             'break_type' => 'required|string|max:255',
         ]);
 
+        if ($validatedData->fails()) {
+            return back()->withErrors($validatedData)->withInput();
+        }
+
         $date = Carbon::now();
         $formattedDate = $date->format('d/m/Y H:i:s');
 
-        $user = BreakTime::create([
-            'emp_id' => $request->emp_id,
-            'break_type' => $request->break_type,
-            'break_in' => $formattedDate,
-            'status' => 0,
-        ]);
+        $isExit = BreakTime::where('emp_id', $request->emp_id)->where('status', 0)->first();
 
-        return redirect()->back();
+        if (!$isExit) {
+            $breakTime = BreakTime::create([
+                'emp_id' => $request->emp_id,
+                'break_type' => $request->break_type,
+                'break_in' => $formattedDate,
+                'status' => 0,
+            ]);
+
+            // if (Inertia::get()->wantsJson()) {
+            //     return response()->json(['data' => $breakTime]);
+            // }
+
+            session()->flash('message', 'There is already a running break!!');
+
+
+            return redirect()->route('break.employee');
+        } else {
+
+            // ---------------- json call in inertia ----------------
+            // if ($request->wantsJson()) {
+            //     return response()->json(['error' => 'There is already a running break!!']);
+            // }
+
+            // session()->flash('message', 'There is already a running break!!');
+
+            // return redirect()->back()->withErrors(['error' => 'There is already a running break!!']);
+
+
+            // -------------- without json call session flash ----------------------
+
+            session()->flash('message', 'There is already a running break!!');
+
+            return redirect()->back();
+        }
     }
 
     /**
@@ -73,7 +106,6 @@ class BreakTimeController extends Controller
      */
     public function update(Request $request, BreakTime $breakTime)
     {
-
     }
 
     /**
@@ -84,15 +116,18 @@ class BreakTimeController extends Controller
         //
     }
 
-    public function updateBreak(Request $request){
+    public function updateBreak(Request $request)
+    {
 
         // dd($request->all());
-        $validate = $request->validate([
+        $validate = Validator::make($request->all(), [
             'emp_id' => 'required|numeric|max:255',
-            'break_type' => 'required|string|max:255',
+            // 'break_type' => 'required|string|max:255',
         ]);
 
-        if($validate->fail())
+        if ($validate->fails()) {
+            return back()->withErrors($validate)->withInput();
+        }
 
         $date = Carbon::now();
         $formattedDate = $date->format('d/m/Y H:i:s');
@@ -100,13 +135,40 @@ class BreakTimeController extends Controller
 
         $isExit = BreakTime::where('emp_id', $empId)->where('status', 0)->first();
 
-        if($isExit){
+        if ($isExit) {
             $data = array();
             $data['break_end'] = $formattedDate;
             $data['status'] = 1;
             DB::table('break_times')->where('emp_id', $empId)->where('status', 0)->update($data);
-        }else{
-            return 'not work';
+
+            session()->flash('message', 'Break End Successfully End!!');
+        } else {
+            session()->flash('message', 'There is no available break!!');
         }
+    }
+
+
+    public function breakEmployee()
+    {
+
+        // $timestamp1 = '2023-06-23 10:02:00';
+        // $timestamp2 = '2023-06-23 11:08:24';
+
+        // // Convert the timestamps to Carbon instances
+        // $carbon1 = Carbon::parse($timestamp1);
+        // $carbon2 = Carbon::parse($timestamp2);
+
+        // // Calculate the time difference
+        // $diff = $carbon2->diff($carbon1);
+
+        // // Access the time difference components
+        // $hours = $diff->h;
+        // $minutes = $diff->i;
+        // $seconds = $diff->s;
+
+        // echo "Time Difference: $hours hours, $minutes minutes, $seconds seconds";
+        // dd( $hours,$minutes,$seconds);
+
+        return Inertia::render('Break/View');
     }
 }

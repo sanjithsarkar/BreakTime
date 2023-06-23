@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('/breaks', BreakTimeController::class);
     Route::post('/break/update', [BreakTimeController::class, 'updateBreak'])->name('update.break');
+    Route::get('/break/employee', [BreakTimeController::class, 'breakEmployee'])->name('break.employee');
 });
 
 require __DIR__.'/auth.php';

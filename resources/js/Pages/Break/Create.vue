@@ -1,6 +1,6 @@
 <script setup>
 import { router, useForm } from '@inertiajs/vue3'
-import { reactive, ref } from "vue";
+import { reactive, ref, defineProps } from "vue";
 
 const form = reactive({
     emp_id: null,
@@ -9,6 +9,7 @@ const form = reactive({
 
 const props = defineProps({
     breakTime: Object,
+    errors: Object,
 })
 
 const editForm = useForm({
@@ -26,7 +27,11 @@ const insertBreak = () => {
 // ------------ End Break ---------------------
 
 const endBreak = () => {
-    router.post('/break/update', editForm)
+    router.post('/break/update', editForm, {
+        onSuccess: () => {
+            hideModal();
+        },
+    })
 }
 
 // ----------------- Modal --------------
@@ -42,16 +47,23 @@ const hideModal = () => {
     isModalVisible.value = false;
 }
 
+
 </script>
 <template>
     <section>
         <div class="row d-flex justify-content-center">
-            <div class="col-md-10">
-                <div class="card">
+            <div class="col-md-5">
+                <div class="card mt-20">
                     <div class="card-header d-flex justify-content-center">
                         <h2>Take Break</h2>
                         <button class="btn btn-danger ml-6" @click.prevent="showModal()">Break End</button>
                     </div>
+
+                    <!--------------------- Display Flash Message -------------------->
+                    <div v-if="$page.props.flash.message" class="text-danger d-flex justify-content-center">
+                        {{ $page.props.flash.message }}
+                    </div>
+
                     <div class="card-body">
                         <form class="d-flex justify-content-center" @submit.prevent="insertBreak">
                             <div>
@@ -59,25 +71,24 @@ const hideModal = () => {
                                     <label for="Employee ID">Employee ID:</label>
                                     <input type="number" class="form-input ml-2" v-model="form.emp_id"
                                         placeholder="Enter Employee ID">
+                                    <div v-if="errors.emp_id" class="text-danger">{{ errors.emp_id }}</div>
+
                                 </div>
 
                                 <div class="form-check mt-3">
                                     <input class="form-check-input" type="radio" id="short_break" name="break_type"
                                         v-model="form.break_type" value="1">
                                     <label class="form-check-label" for="short_break">Short Break</label>
+
+                                    <div v-if="errors.break_type" class="text-danger">{{ errors.break_type }}</div>
                                 </div>
 
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" id="long_break" name="break_type"
                                         v-model="form.break_type" value="2">
                                     <label class="form-check-label" for="long_break">Long Break</label>
+                                    <div v-if="errors.break_type" class="text-danger">{{ errors.break_type }}</div>
                                 </div>
-
-
-
-                                <progress v-if="form.progress" :value="form.progress.percentage" max="100">
-                                    {{ form.progress.percentage }}%
-                                </progress>
 
                                 <div class="text-center">
                                     <button class="btn btn-primary" type="submit">Submit</button>
@@ -95,30 +106,26 @@ const hideModal = () => {
                                         <div class="card-header d-flex justify-content-center">
                                             <h2>End Break</h2>
                                         </div>
+
+                                        <!--------------------- Display Flash Message -------------------->
+                                        <div v-if="$page.props.flash.message"
+                                            class="text-danger d-flex justify-content-center">
+                                            {{ $page.props.flash.message }}
+                                        </div>
+
                                         <div class="card-body">
                                             <form class="d-flex justify-content-center" @submit.prevent="endBreak">
                                                 <div>
                                                     <div class="form-group">
                                                         <label for="Employee ID">Employee ID:</label>
-                                                        <input type="number" class="form-input ml-2" v-model="editForm.emp_id"
-                                                            placeholder="Enter Employee ID">
-                                                    </div>
-
-                                                    <div class="form-check mt-3">
-                                                        <input class="form-check-input" type="radio" id="short_break"
-                                                            name="break_type" v-model="editForm.break_type" value="1">
-                                                        <label class="form-check-label" for="short_break">Short
-                                                            Break</label>
-                                                    </div>
-
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" id="long_break"
-                                                            name="break_type" v-model="editForm.break_type" value="2">
-                                                        <label class="form-check-label" for="long_break">Long Break</label>
+                                                        <input type="number" class="form-input ml-2"
+                                                            v-model="editForm.emp_id" placeholder="Enter Employee ID">
+                                                        <div v-if="errors.emp_id" class="text-danger">{{ errors.emp_id }}
+                                                        </div>
                                                     </div>
 
                                                     <div class="text-center">
-                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                        <button class="btn btn-primary mt-3" type="submit">Submit</button>
                                                     </div>
 
                                                     <div class="d-flex justify-content-center mt-4">
@@ -144,21 +151,20 @@ const hideModal = () => {
 <style>
 .modal {
     position: fixed;
-    top: 15%;
-    left: 20%;
-    width: 50%;
-    height: 50%;
-    background-color: white;
+    top: 12%;
+    left: 35%;
+    width: 30%;
+    height: 42%;
+    background-color: rgba(0, 0, 0, .5);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .modal-content {
-    background-color: white;
+    background-color: transparent;
     padding: 20px;
     border-radius: 4px;
     width: 100%;
     height: 100%;
-}
-</style>
+}</style>

@@ -34,42 +34,59 @@ const changePerPage = () => {
 </script>
 
 <template>
-    <div class="container">
-        <div class="row d-flex justify-content-center">
-            <div class="col-md-8">
-                <table class="table table-strip text-center">
-                    <thead>
-                        <th>Serial</th>
-                        <th>Employee ID</th>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(table, index) in  tableData.data">
-                            <td>{{ ++index }}</td>
-                            <td>{{ table.emp_id }}</td>
-                            <td>{{ table.break_in }}</td>
+    <section>
+        <div class="container">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-8">
+                    <div class="my-4">
+                        <Link :href="route('breaks.create')" class="btn btn-primary">
+                        Back to Break</Link>
 
-                        </tr>
-                    </tbody>
-                </table>
+                    </div>
 
-                <div>
-                    <select v-model="perPage" @change="changePerPage">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                    </select>
-                </div>
-                <div class="text-gray-500 text-sm">
-                    Showing: {{ tableData.from }} To {{ tableData.to }} Of {{ tableData.total }}
-                </div>
-                <div class="flex gap-2 items-center">
-                    <span v-for="url of tableData.links" v-html="url.label" @click="loadData(url.url)" :class="{
-                        'text-red-500': (url.active == true)
-                    }">
+                    <div v-if="$page.props.flash.message" class="alert">
+                        {{ $page.props.flash.message }}
+                    </div>
 
-                    </span>
+                    <table class="table table-strip text-center">
+                        <thead>
+                            <th>Serial</th>
+                            <th>Employee ID</th>
+                            <th>Break Type</th>
+                            <th>Break In</th>
+                            <th>Break End</th>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(table, index) in  tableData.data">
+                                <td>{{ ++index }}</td>
+                                <td>{{ table.emp_id }}</td>
+                                <td>{{ table.break_type }}</td>
+                                <td>{{ table.break_in }}</td>
+                                <td>{{ table.break_end }}</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div>
+                        <select v-model="perPage" @change="changePerPage">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                    <div class="text-gray-500 text-sm">
+                        Showing: {{ tableData.from }} To {{ tableData.to }} Of {{ tableData.total }}
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span v-for="url of tableData.links" v-html="url.label" @click="loadData(url.url)" :class="{
+                            'text-red-500': (url.active == true)
+                        }">
+
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </template>
