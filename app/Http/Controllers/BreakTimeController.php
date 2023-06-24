@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BreakTime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
@@ -16,6 +17,7 @@ class BreakTimeController extends Controller
      */
     public function index(Request $request)
     {
+
         $perPage = $request->input('perPage');
         $breaks = BreakTime::paginate(request()->perPage ?? ($perPage ?? 5));
         return Inertia::render('Break/Index')->with('breaks', $breaks);
@@ -45,7 +47,7 @@ class BreakTimeController extends Controller
         }
 
         $date = Carbon::now();
-        $formattedDate = $date->format('d/m/Y H:i:s');
+        $formattedDate = $date->format('d-m-Y H:i:s');
 
         $isExit = BreakTime::where('emp_id', $request->emp_id)->where('status', 0)->first();
 
@@ -61,10 +63,8 @@ class BreakTimeController extends Controller
             //     return response()->json(['data' => $breakTime]);
             // }
 
-            session()->flash('message', 'There is already a running break!!');
+            session()->flash('message', 'The break has started!!');
 
-
-            return redirect()->route('break.employee');
         } else {
 
             // ---------------- json call in inertia ----------------
@@ -130,7 +130,7 @@ class BreakTimeController extends Controller
         }
 
         $date = Carbon::now();
-        $formattedDate = $date->format('d/m/Y H:i:s');
+        $formattedDate = $date->format('d-m-Y H:i:s');
         $empId = $request->emp_id;
 
         $isExit = BreakTime::where('emp_id', $empId)->where('status', 0)->first();
@@ -145,30 +145,31 @@ class BreakTimeController extends Controller
         } else {
             session()->flash('message', 'There is no available break!!');
         }
+
+        if ($empId) {
+            $breakTime = BreakTime::where('emp_id', $empId)->where('total', null)->first();
+            $carbon1 = Carbon::parse($breakTime->break_in);
+            $carbon2 = Carbon::parse($breakTime->break_end);
+            $diff = $carbon2->diff($carbon1);
+
+            $hours = $diff->h;
+            $minutes = $diff->i;
+            $seconds = $diff->s;
+
+            // Format the time difference
+            $formattedTime = sprintf("%02d-%02d-%02d", $hours, $minutes, $seconds);
+
+            // dd($formattedTime);
+
+            $data = array();
+            $data['total'] = $formattedTime;
+            DB::table('break_times')->where('emp_id', $empId)->where('total', Null)->update($data);
+        }
     }
 
 
-    public function breakEmployee()
+    public function breakEmployee(Request $request)
     {
-
-        // $timestamp1 = '2023-06-23 10:02:00';
-        // $timestamp2 = '2023-06-23 11:08:24';
-
-        // // Convert the timestamps to Carbon instances
-        // $carbon1 = Carbon::parse($timestamp1);
-        // $carbon2 = Carbon::parse($timestamp2);
-
-        // // Calculate the time difference
-        // $diff = $carbon2->diff($carbon1);
-
-        // // Access the time difference components
-        // $hours = $diff->h;
-        // $minutes = $diff->i;
-        // $seconds = $diff->s;
-
-        // echo "Time Difference: $hours hours, $minutes minutes, $seconds seconds";
-        // dd( $hours,$minutes,$seconds);
-
         return Inertia::render('Break/View');
     }
 }

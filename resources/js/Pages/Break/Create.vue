@@ -19,9 +19,20 @@ const editForm = useForm({
 
 // ----------- Insert Break -----------------
 
+// const insertBreak = () => {
+//     router.post('/breaks', form), {
+//         onSuccess: () => {
+//             setTimeout(() => {
+//                 $page.props.flash.message = '';
+//             }, 300);
+//         },
+//     }
+// }
+
 const insertBreak = () => {
     router.post('/breaks', form)
-}
+};
+
 
 
 // ------------ End Break ---------------------
@@ -46,6 +57,8 @@ const showModal = () => {
 const hideModal = () => {
     isModalVisible.value = false;
 }
+
+
 
 
 </script>
@@ -167,4 +180,5 @@ const hideModal = () => {
     border-radius: 4px;
     width: 100%;
     height: 100%;
-}</style>
+}
+</style>

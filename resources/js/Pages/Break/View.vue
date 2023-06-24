@@ -1,3 +1,10 @@
+<script setup>
+
+const props = defineProps({
+
+})
+</script>
+
 <template>
     <section>
         <div class="row">
@@ -15,7 +22,7 @@
 
                         <div class="mt-3">
                             <span class="text-2xl"><strong>Break Started At:</strong></span><br>
-                            <span class="text-2xl"><strong>Break Ended At:</strong></span>
+                            <span class="text-2xl"><strong>Break Ended At: </strong></span>
                         </div>
 
                         <div class="d-flex justify-content-center mt-3">
