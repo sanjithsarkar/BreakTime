@@ -3,8 +3,8 @@ import { router, useForm } from '@inertiajs/vue3'
 import { reactive, ref, defineProps } from "vue";
 
 const form = reactive({
-    emp_id: null,
-    break_in: null,
+    emp_id: '',
+    break_in: '',
 })
 
 const props = defineProps({
@@ -19,19 +19,19 @@ const editForm = useForm({
 
 // ----------- Insert Break -----------------
 
-// const insertBreak = () => {
-//     router.post('/breaks', form), {
-//         onSuccess: () => {
-//             setTimeout(() => {
-//                 $page.props.flash.message = '';
-//             }, 300);
-//         },
-//     }
-// }
-
 const insertBreak = () => {
-    router.post('/breaks', form)
-};
+    router.post('/breaks', form), {
+        onSuccess: () => {
+            setTimeout(() => {
+                $page.props.flash.message = '';
+            }, 300);
+        },
+    }
+}
+
+// const insertBreak = () => {
+//     router.post('/breaks', form)
+// };
 
 
 

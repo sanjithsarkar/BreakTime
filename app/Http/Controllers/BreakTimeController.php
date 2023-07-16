@@ -36,9 +36,10 @@ class BreakTimeController extends Controller
      */
     public function store(Request $request)
     {
+
         //dd($request->all());
         $validatedData = Validator::make($request->all(), [
-            'emp_id' => 'required|numeric|max:255',
+            'emp_id' => 'required|numeric',
             'break_type' => 'required|string|max:255',
         ]);
 
@@ -48,14 +49,21 @@ class BreakTimeController extends Controller
 
         $date = Carbon::now();
         $formattedDate = $date->format('d-m-Y H:i:s');
+        $empId = $request->emp_id;
+        $started_at = $date->format('H:i:s');
+        $my_ip = $request->ip();
 
-        $isExit = BreakTime::where('emp_id', $request->emp_id)->where('status', 0)->first();
+
+
+        $isExit = BreakTime::where('emp_id', $empId)->where('status', 0)->first();
 
         if (!$isExit) {
             $breakTime = BreakTime::create([
                 'emp_id' => $request->emp_id,
                 'break_type' => $request->break_type,
                 'break_in' => $formattedDate,
+                'started_at' => $started_at,
+                'start_ip' => $my_ip,
                 'status' => 0,
             ]);
 
@@ -65,6 +73,9 @@ class BreakTimeController extends Controller
 
             session()->flash('message', 'The break has started!!');
 
+            return redirect()->route('view.break', ['employee' => $empId]);
+
+            // return redirect()->route('view.break');
         } else {
 
             // ---------------- json call in inertia ----------------
@@ -121,7 +132,7 @@ class BreakTimeController extends Controller
 
         // dd($request->all());
         $validate = Validator::make($request->all(), [
-            'emp_id' => 'required|numeric|max:255',
+            'emp_id' => 'required|numeric',
             // 'break_type' => 'required|string|max:255',
         ]);
 
@@ -132,6 +143,8 @@ class BreakTimeController extends Controller
         $date = Carbon::now();
         $formattedDate = $date->format('d-m-Y H:i:s');
         $empId = $request->emp_id;
+        $ends_at = $date->format('H:i:s');
+        $ends_ip = $request->ip();
 
         $isExit = BreakTime::where('emp_id', $empId)->where('status', 0)->first();
 
@@ -139,6 +152,8 @@ class BreakTimeController extends Controller
             $data = array();
             $data['break_end'] = $formattedDate;
             $data['status'] = 1;
+            $data['ends_at'] = $ends_at;
+            $data['ends_ip'] = $ends_ip;
             DB::table('break_times')->where('emp_id', $empId)->where('status', 0)->update($data);
 
             session()->flash('message', 'Break End Successfully End!!');
@@ -168,8 +183,13 @@ class BreakTimeController extends Controller
     }
 
 
-    public function breakEmployee(Request $request)
+    public function viewBreak(Request $request, $employee)
     {
-        return Inertia::render('Break/View');
+        $isExit = BreakTime::where('emp_id', $employee)->where('status', 0)->first();
+        // dd($isExit);
+
+        //dd($employee);
+
+        return Inertia::render('Break/View')->with('employee', $isExit);
     }
 }

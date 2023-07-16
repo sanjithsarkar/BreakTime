@@ -9,5 +9,5 @@ class BreakTime extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['emp_id', 'break_type', 'break_in', 'break_end', 'status'];
+    protected $fillable = ['emp_id', 'break_type', 'break_in', 'started_at', 'start_ip', 'break_end', 'ends_at', 'ends_ip', 'status'];
 }

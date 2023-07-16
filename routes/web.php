@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\BreakTimeController;
+use App\Http\Controllers\EmployeeClockController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,7 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('/breaks', BreakTimeController::class);
     Route::post('/break/update', [BreakTimeController::class, 'updateBreak'])->name('update.break');
-    Route::get('/break/employee', [BreakTimeController::class, 'breakEmployee'])->name('break.employee');
+    Route::get('/view/break/{employee}', [BreakTimeController::class, 'viewBreak'])->name('view.break');
+
+    Route::resource('clocks', EmployeeClockController::class);
 });
 
 require __DIR__.'/auth.php';
