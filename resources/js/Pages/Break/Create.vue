@@ -29,10 +29,6 @@ const insertBreak = () => {
     }
 }
 
-// const insertBreak = () => {
-//     router.post('/breaks', form)
-// };
-
 
 
 // ------------ End Break ---------------------
@@ -73,6 +69,7 @@ const hideModal = () => {
                     </div>
 
                     <!--------------------- Display Flash Message -------------------->
+
                     <div v-if="$page.props.flash.message" class="text-danger d-flex justify-content-center">
                         {{ $page.props.flash.message }}
                     </div>
@@ -121,6 +118,7 @@ const hideModal = () => {
                                         </div>
 
                                         <!--------------------- Display Flash Message -------------------->
+
                                         <div v-if="$page.props.flash.message"
                                             class="text-danger d-flex justify-content-center">
                                             {{ $page.props.flash.message }}
@@ -131,7 +129,7 @@ const hideModal = () => {
                                                 <div>
                                                     <div class="form-group">
                                                         <label for="Employee ID">Employee ID:</label>
-                                                        <input type="number" class="form-input ml-2"
+                                                        <input type="number" class="form-input"
                                                             v-model="editForm.emp_id" placeholder="Enter Employee ID">
                                                         <div v-if="errors.emp_id" class="text-danger">{{ errors.emp_id }}
                                                         </div>
