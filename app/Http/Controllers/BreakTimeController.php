@@ -6,6 +6,7 @@ use App\Models\BreakTime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
@@ -51,6 +52,7 @@ class BreakTimeController extends Controller
         $formattedDate = $date->format('d-m-Y H:i:s');
         $empId = $request->emp_id;
         $started_at = $date->format('H:i:s');
+        $started_date = $date->format('d-m-Y');
         $my_ip = $request->ip();
 
 
@@ -62,6 +64,7 @@ class BreakTimeController extends Controller
                 'emp_id' => $request->emp_id,
                 'break_type' => $request->break_type,
                 'break_in' => $formattedDate,
+                'started_date' => $started_date,
                 'started_at' => $started_at,
                 'start_ip' => $my_ip,
                 'status' => 0,
@@ -188,8 +191,13 @@ class BreakTimeController extends Controller
         $isExit = BreakTime::where('emp_id', $employee)->where('status', 0)->first();
         // dd($isExit);
 
-        //dd($employee);
+        $currentDate = Carbon::now()->format('d-m-Y');
 
-        return Inertia::render('Break/View')->with('employee', $isExit);
+        $todayBreaks = BreakTime::where('emp_id', $employee)
+            ->where('started_date', $currentDate)
+            ->get();
+
+            //  dd($todayBreaks);
+            return Inertia::render('Break/View')->with('employee', $isExit)->with('breaks', $todayBreaks);
     }
 }

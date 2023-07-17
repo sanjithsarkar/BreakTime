@@ -1,14 +1,10 @@
 <script setup>
-import { Link, router } from '@inertiajs/vue3';
-import { computed } from 'vue';
-// import { Link, useRoute } from '@inertiajs/inertia-vue3';
-import { defineProps } from 'vue';
-
-// const route = useRoute();
-// const empId = route.value.params.id;
+import { Link } from '@inertiajs/vue3';
+import { reactive, ref, defineProps, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
-    employee: Object
+    employee: Object,
+    breaks: Object
 });
 
 const startedAt = (time) => {
@@ -36,7 +32,7 @@ const shortBreak = (startedAt) => {
 
 const longBreak = (startedAt) => {
 
-    // this code for 24 hours
+    //----------------- this code for 24 hours-------------------
     // const [hours, minutes, seconds] = startedAt.split(':').map(Number);
     // let breakEnd = new Date();
     // breakEnd.setHours(hours);
@@ -57,13 +53,31 @@ const longBreak = (startedAt) => {
     return endedAt;
 }
 
+
+const currentTime = ref(new Date().toLocaleTimeString());
+
+onMounted(() => {
+    // Update the time every second (1000 milliseconds)
+    setInterval(() => {
+        currentTime.value = new Date().toLocaleTimeString();
+    }, 1000);
+});
+
+// onUnmounted(() => {
+//     // Clear the interval when the component is unmounted
+//     clearInterval(updateClock);
+// });
+
 </script>
 
 <template>
     <section>
-        <div class="row">
+        <div class="row d-flex justify-content-center">
             <div class="col-md-8">
-                <div class="row d-flex justify-content-center">
+                <div class="time-header mt-5">
+                    <span class="btn btn-success">{{ currentTime }}</span>
+                </div>
+                <div class="row">
                     <div class="col-md-6">
                         <div class="mt-40 d-flex justify-content-center">
                             <h2 class="text-5xl">Break Started</h2>
@@ -71,8 +85,10 @@ const longBreak = (startedAt) => {
                         <div class="mt-3">
                             <span class="text-2xl">Hello <strong class="fw-bolder">Sherwin ( Sanjith Chandra Sarkar
                                     )</strong></span><br>
-                            <span v-if="props.employee.break_type == 1" class="text-2xl">You are in a <strong>Short Break</strong></span>
-                            <span v-if="props.employee.break_type == 2" class="text-2xl">You are in a <strong>Long Break</strong></span>
+                            <span v-if="props.employee.break_type == 1" class="text-2xl">You are in a <strong>Short
+                                    Break</strong></span>
+                            <span v-if="props.employee.break_type == 2" class="text-2xl">You are in a <strong>Long
+                                    Break</strong></span>
                         </div>
 
                         <div class="mt-3">
@@ -91,6 +107,26 @@ const longBreak = (startedAt) => {
                                 <Link :href="route('breaks.create')" class="text-white text-decoration-none">
                                 Back to Break</Link>
                             </Button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mt-40">
+                            <h3>Today Breaks</h3>
+                            <div class="">
+                                <table>
+                                    <tbody>
+                                        <tr v-for="breakdata in props.breaks" :key="breakdata.id">
+                                            <!-- <h3 class="d-flex justify-content-center" v-if="breakdata.break_type == 1"><strong>Short</strong></h3><br> -->
+                                            <td>{{ breakdata.started_at }}</td>
+                                            <td v-if="breakdata.status == 0">-></td>
+                                            <td v-else="">-</td>
+                                            <td v-if="breakdata.status == 0"> Break Continue</td>
+                                            <td>{{ breakdata.ends_at }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

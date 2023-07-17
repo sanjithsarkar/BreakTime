@@ -16,9 +16,11 @@ return new class extends Migration
             $table->unsignedInteger('emp_id');
             $table->string('break_type')->nullable();
             $table->string('break_in')->nullable();
+            $table->string('started_date')->nullable();
             $table->string('started_at')->nullable();
             $table->string('start_ip')->nullable();
             $table->string('break_end')->nullable();
+            $table->string('ended_date')->nullable();
             $table->string('ends_at')->nullable();
             $table->string('ends_ip')->nullable();
             $table->string('total')->nullable();
