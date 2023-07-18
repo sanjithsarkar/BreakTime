@@ -76,9 +76,11 @@ class BreakTimeController extends Controller
 
             session()->flash('message', 'The break has started!!');
 
-            return redirect()->route('view.break', ['employee' => $empId]);
+            // return redirect()->route('view.break', ['employee' => $empId])->with('flash', ['message' => 'The break has started!!']);
 
             // return redirect()->route('view.break');
+
+            return redirect()->route('view.break', ['employee' => $empId]);
         } else {
 
             // ---------------- json call in inertia ----------------
@@ -93,7 +95,14 @@ class BreakTimeController extends Controller
 
             // -------------- without json call session flash ----------------------
 
-            session()->flash('message', 'There is already a running break!!');
+            // session()->flash('message', 'There is already a running break!!');
+
+            // return redirect()->back();
+
+            Inertia::share(['flash' => [
+                'message' => 'There is already a running break!!',
+            ]]);
+            
 
             return redirect()->back();
         }

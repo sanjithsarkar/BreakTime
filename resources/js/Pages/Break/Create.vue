@@ -1,4 +1,5 @@
 <script setup>
+import FlashMessage from '@/Components/FlashMessage.vue';
 import { router, useForm } from '@inertiajs/vue3'
 import { reactive, ref, defineProps } from "vue";
 
@@ -7,9 +8,11 @@ const form = reactive({
     break_in: '',
 })
 
+
 const props = defineProps({
     breakTime: Object,
     errors: Object,
+    // message: String,
 })
 
 const editForm = useForm({
@@ -23,7 +26,7 @@ const insertBreak = () => {
     router.post('/breaks', form), {
         onSuccess: () => {
             setTimeout(() => {
-                $page.props.flash.message = '';
+                console.log($page.props.flash.message);
             }, 300);
         },
     }
@@ -70,9 +73,17 @@ const hideModal = () => {
 
                     <!--------------------- Display Flash Message -------------------->
 
-                    <div v-if="$page.props.flash.message" class="text-danger d-flex justify-content-center">
-                        {{ $page.props.flash.message }}
+                    <div class="d-flex justify-content-center">
+                        <FlashMessage class="alert text-success" v-if="$page.props.flash.message" :message="$page.props.flash.message" />
                     </div>
+
+                    <!-- <div v-if="props.message" class="alert alert-success">
+                        {{ props.message }}
+                    </div> -->
+
+                    <!-- <div v-if="$page.props.flash.success" class="alert alert-success">
+                        {{ $page.props.flash.success }}
+                    </div> -->
 
                     <div class="card-body">
                         <form class="d-flex justify-content-center" @submit.prevent="insertBreak">
@@ -129,8 +140,8 @@ const hideModal = () => {
                                                 <div>
                                                     <div class="form-group">
                                                         <label for="Employee ID">Employee ID:</label>
-                                                        <input type="number" class="form-input"
-                                                            v-model="editForm.emp_id" placeholder="Enter Employee ID">
+                                                        <input type="number" class="form-input" v-model="editForm.emp_id"
+                                                            placeholder="Enter Employee ID">
                                                         <div v-if="errors.emp_id" class="text-danger">{{ errors.emp_id }}
                                                         </div>
                                                     </div>
