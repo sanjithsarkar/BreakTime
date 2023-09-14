@@ -71,7 +71,7 @@ const hideModal = () => {
                         <button class="btn btn-danger ml-6" @click.prevent="showModal()">Break End</button>
                     </div>
 
-                    <!--------------------- Display Flash Message -------------------->
+                    <!--------------------- Display Flash Message using FlashMessage components -------------------->
 
                     <div class="d-flex justify-content-center">
                         <FlashMessage class="alert text-success" v-if="$page.props.flash.message" :message="$page.props.flash.message" />
